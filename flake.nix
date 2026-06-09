@@ -29,6 +29,10 @@
             packages = with pkgs; [
               gnumake
               nixfmt
+              ansible
+              ansible-lint
+              ansible-language-server
+              ansible-builder
             ];
           };
 

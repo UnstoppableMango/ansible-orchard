@@ -1,0 +1,40 @@
+---
+- name: Configure AAP for SAML
+  hosts: localhost
+  gather_facts: no
+  vars:
+    aap_url: "https://aap.example.com"
+    aap_user: "admin"
+    aap_pass: "changeme"
+    idp_metadata_url: "https://idp.example.com/metadata"
+    entity_id: "https://aap.example.com/saml/metadata"
+  tasks:
+    - name: Fetch IdP metadata
+      ansible.builtin.uri:
+        url: "{{ idp_metadata_url }}"
+        return_content: yes
+        validate_certs: yes
+      register: idp_meta
+
+    - name: Enable and configure SAML in AAP settings
+      ansible.builtin.uri:
+        url: "{{ aap_url }}/api/v2/settings/"
+        method: PATCH
+        user: "{{ aap_user }}"
+        password: "{{ aap_pass }}"
+        force_basic_auth: yes
+        headers:
+          Content-Type: "application/json"
+        body_format: json
+        body:
+          SAML_ENABLED: true
+          SOCIAL_AUTH_SAML_SP_ENTITY_ID: "{{ entity_id }}"
+          SOCIAL_AUTH_SAML_IDP_METADATA: "{{ idp_meta.content }}"
+          SOCIAL_AUTH_SAML_USER_ATTRMAP: '{"username":"uid","email":"email"}'
+          SOCIAL_AUTH_SAML_CREATE_USERS: true
+      status_code: [200,201,202]
+      register: saml_result
+
+    - name: Show result
+      ansible.builtin.debug:
+        var: saml_result.json

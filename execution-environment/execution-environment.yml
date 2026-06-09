@@ -1,0 +1,20 @@
+version: 1
+
+# Execution environment definition for ansible-builder
+# Contains the minimal deps to run playbooks that use ansible.builtin.uri
+
+dependencies:
+  python: requirements.txt
+  galaxy: ansible-requirements.yml
+  system:
+    - gcc
+    - libffi-dev
+    - libssl-dev
+    - build-essential
+    - git
+    - ca-certificates
+
+# Optional: image name/metadata for ansible-builder
+metadata:
+  name: orchard-ee
+  version: "0.1"
