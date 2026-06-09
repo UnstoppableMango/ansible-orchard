@@ -9,6 +9,9 @@ dependencies:
     package_pip: ansible-core
   ansible_runner:
     package_pip: ansible-runner
+  galaxy:
+    collections:
+      - name: awx.awx
   python:
     - requests
   system:

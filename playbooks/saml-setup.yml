@@ -16,23 +16,22 @@
         validate_certs: yes
       register: idp_meta
 
-    - name: Enable and configure SAML in AAP settings
-      ansible.builtin.uri:
-        url: "{{ aap_url }}/api/v2/settings/"
-        method: PATCH
-        user: "{{ aap_user }}"
-        password: "{{ aap_pass }}"
-        force_basic_auth: yes
-        headers:
-          Content-Type: "application/json"
-        body_format: json
-        body:
+    - name: Configure SAML settings via awx.awx.setting
+      vars:
+        saml_settings:
           SAML_ENABLED: true
           SOCIAL_AUTH_SAML_SP_ENTITY_ID: "{{ entity_id }}"
           SOCIAL_AUTH_SAML_IDP_METADATA: "{{ idp_meta.content }}"
           SOCIAL_AUTH_SAML_USER_ATTRMAP: '{"username":"uid","email":"email"}'
           SOCIAL_AUTH_SAML_CREATE_USERS: true
-      status_code: [200,201,202]
+      awx.awx.setting:
+        name: "{{ item.key }}"
+        value: "{{ item.value }}"
+        host: "{{ aap_url }}"
+        username: "{{ aap_user }}"
+        password: "{{ aap_pass }}"
+        validate_certs: yes
+      loop: "{{ saml_settings | dict2items }}"
       register: saml_result
 
     - name: Show result
