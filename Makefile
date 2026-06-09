@@ -1,5 +1,5 @@
-build:
-	nix build .#
+build: context/Containerfile
+	ansible-builder build -f execution-environment/execution-environment.yml
 
 update:
 	nix flake update
@@ -10,6 +10,6 @@ check lint:
 format fmt:
 	nix fmt
 
-.ansible/Containerfile: execution-environment/execution-environment.yml execution-environment/requirements.txt execution-environment/ansible-requirements.yml
-	ansible-builder build -f execution-environment/execution-environment.yml
+context/Containerfile: execution-environment/execution-environment.yml
+	ansible-builder create -f $<
 

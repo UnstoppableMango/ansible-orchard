@@ -3,3 +3,9 @@
 .direnv/
 bin/
 .ansible/
+*.log
+*.out
+
+# ansible-builder artifacts
+_build/
+context/

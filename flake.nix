@@ -27,12 +27,14 @@
         {
           devShells.default = pkgs.mkShellNoCC {
             packages = with pkgs; [
-              gnumake
-              nixfmt
               ansible
               ansible-lint
               ansible-language-server
               ansible-builder
+              gnumake
+              nixfmt
+	      podman
+	      skopeo
             ];
           };
 
