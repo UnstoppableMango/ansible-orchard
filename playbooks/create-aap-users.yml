@@ -1,0 +1,53 @@
+---
+- name: Create AAP users for SAML
+  hosts: localhost
+  gather_facts: no
+  vars:
+    # aap_url, aap_user, aap_pass should be provided via -e or environment
+  vars_files:
+    - ../group_vars/all/saml_users.yml
+  tasks:
+    - name: Ensure required collection is present (placeholder)
+      ansible.builtin.debug:
+        msg: "Ensure awx.awx collection is installed before running this playbook"
+
+    - name: Create or update users
+      awx.awx.user:
+        username: "{{ item.username }}"
+        email: "{{ item.email | default(item.username + '@example.com') }}"
+        first_name: "{{ item.first_name | default('') }}"
+        last_name: "{{ item.last_name | default('') }}"
+        state: present
+        host: "{{ aap_url }}"
+        username: "{{ aap_user }}"
+        password: "{{ aap_pass }}"
+      loop: "{{ saml_users }}"
+      register: created_users
+
+    - name: Assign users to organizations
+      awx.awx.organization_user:
+        organization: "{{ item.org | default('Default') }}"
+        user: "{{ item.username }}"
+        role: "{{ item.role | default('member') }}"
+        state: present
+        host: "{{ aap_url }}"
+        username: "{{ aap_user }}"
+        password: "{{ aap_pass }}"
+      loop: "{{ saml_users }}"
+      when: item.org is defined
+
+    - name: Assign users to teams (if defined)
+      awx.awx.team_user:
+        team: "{{ item.team }}"
+        user: "{{ item.username }}"
+        role: "{{ item.team_role | default('member') }}"
+        state: present
+        host: "{{ aap_url }}"
+        username: "{{ aap_user }}"
+        password: "{{ aap_pass }}"
+      loop: "{{ saml_users }}"
+      when: item.team is defined and item.team | length > 0
+
+    - name: Show created users
+      ansible.builtin.debug:
+        var: created_users

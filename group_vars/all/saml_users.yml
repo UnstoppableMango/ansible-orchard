@@ -1,0 +1,17 @@
+# Placeholder user definitions for SAML
+saml_users:
+  - username: techecr
+    email: techecr@example.com
+    org: Default
+    role: member
+    team: ''
+  - username: techbrp
+    email: techbrp@example.com
+    org: Default
+    role: member
+    team: ''
+  - username: techjod
+    email: techjod@example.com
+    org: Default
+    role: member
+    team: ''
