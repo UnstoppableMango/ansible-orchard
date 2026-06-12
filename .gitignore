@@ -9,3 +9,6 @@ bin/
 # ansible-builder artifacts
 _build/
 context/
+
+# kind
+.kind/

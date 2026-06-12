@@ -33,8 +33,12 @@
               ansible-builder
               gnumake
               nixfmt
-	      podman
-	      skopeo
+              podman
+              skopeo
+              kind
+              kubectl
+              kubernetes-helm
+	      watch
             ];
           };
 
