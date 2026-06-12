@@ -3,6 +3,10 @@ KUBECONFIG ?= .kind/kubeconfig
 AWX_NAMESPACE ?= awx
 AWX_OPERATOR_VERSION ?= 3.2.1
 KIND_EXPERIMENTAL_PROVIDER ?= podman
+AWX_URL ?= http://localhost:30080
+AWX_USER ?= admin
+AWX_PASS ?= $(shell kubectl get secret awx-admin-password -n $(AWX_NAMESPACE) -o jsonpath='{.data.password}' | base64 --decode)
+PLAYBOOK ?= playbooks/create-aap-users.yml
 
 export KUBECONFIG
 export KIND_EXPERIMENTAL_PROVIDER
@@ -57,5 +61,12 @@ awx-status:
 
 .PHONY: awx-password
 awx-password:
-	kubectl get secret awx-admin-password -n $(AWX_NAMESPACE) -o jsonpath='{.data.password}' | base64 --decode && echo
+	@echo $(AWX_PASS)
+
+.PHONY: run
+run:
+	ansible-playbook $(PLAYBOOK) \
+		-e aap_url=$(AWX_URL) \
+		-e aap_user=$(AWX_USER) \
+		-e aap_pass=$(AWX_PASS)
 

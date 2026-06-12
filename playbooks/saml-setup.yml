@@ -27,9 +27,9 @@
       awx.awx.setting:
         name: "{{ item.key }}"
         value: "{{ item.value }}"
-        host: "{{ aap_url }}"
-        username: "{{ aap_user }}"
-        password: "{{ aap_pass }}"
+        controller_host: "{{ aap_url }}"
+        controller_username: "{{ aap_user }}"
+        controller_password: "{{ aap_pass }}"
         validate_certs: yes
       loop: "{{ saml_settings | dict2items }}"
       register: saml_result

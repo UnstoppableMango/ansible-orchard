@@ -14,37 +14,40 @@
     - name: Create or update users
       awx.awx.user:
         username: "{{ item.username }}"
+        password: "{{ item.password | default(lookup('password', '/dev/null length=32 chars=ascii_letters,digits')) }}"
         email: "{{ item.email | default(item.username + '@example.com') }}"
         first_name: "{{ item.first_name | default('') }}"
         last_name: "{{ item.last_name | default('') }}"
         state: present
-        host: "{{ aap_url }}"
-        username: "{{ aap_user }}"
-        password: "{{ aap_pass }}"
+        controller_host: "{{ aap_url }}"
+        controller_username: "{{ aap_user }}"
+        controller_password: "{{ aap_pass }}"
       loop: "{{ saml_users }}"
       register: created_users
 
     - name: Assign users to organizations
-      awx.awx.organization_user:
-        organization: "{{ item.org | default('Default') }}"
+      awx.awx.role:
         user: "{{ item.username }}"
         role: "{{ item.role | default('member') }}"
+        organizations:
+          - "{{ item.org }}"
         state: present
-        host: "{{ aap_url }}"
-        username: "{{ aap_user }}"
-        password: "{{ aap_pass }}"
+        controller_host: "{{ aap_url }}"
+        controller_username: "{{ aap_user }}"
+        controller_password: "{{ aap_pass }}"
       loop: "{{ saml_users }}"
       when: item.org is defined
 
     - name: Assign users to teams (if defined)
-      awx.awx.team_user:
-        team: "{{ item.team }}"
+      awx.awx.role:
         user: "{{ item.username }}"
         role: "{{ item.team_role | default('member') }}"
+        teams:
+          - "{{ item.team }}"
         state: present
-        host: "{{ aap_url }}"
-        username: "{{ aap_user }}"
-        password: "{{ aap_pass }}"
+        controller_host: "{{ aap_url }}"
+        controller_username: "{{ aap_user }}"
+        controller_password: "{{ aap_pass }}"
       loop: "{{ saml_users }}"
       when: item.team is defined and item.team | length > 0
 
