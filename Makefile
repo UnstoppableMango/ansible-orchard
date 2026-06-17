@@ -7,6 +7,8 @@ AWX_URL ?= http://localhost:30080
 AWX_USER ?= admin
 AWX_PASS ?= $(shell kubectl get secret awx-admin-password -n $(AWX_NAMESPACE) -o jsonpath='{.data.password}' | base64 --decode)
 PLAYBOOK ?= playbooks/create-aap-users.yml
+GITHUB_OAUTH_KEY ?=
+GITHUB_OAUTH_SECRET ?=
 
 export KUBECONFIG
 export KIND_EXPERIMENTAL_PROVIDER
@@ -69,4 +71,13 @@ run:
 		-e aap_url=$(AWX_URL) \
 		-e aap_user=$(AWX_USER) \
 		-e aap_pass=$(AWX_PASS)
+
+.PHONY: github-auth
+github-auth:
+	ansible-playbook playbooks/configure-github-auth.yml \
+		-e aap_url=$(AWX_URL) \
+		-e aap_user=$(AWX_USER) \
+		-e aap_pass=$(AWX_PASS) \
+		-e github_oauth_key=$(GITHUB_OAUTH_KEY) \
+		-e github_oauth_secret=$(GITHUB_OAUTH_SECRET)
 

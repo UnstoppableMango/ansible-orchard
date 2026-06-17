@@ -1,0 +1,45 @@
+---
+- name: Configure GitHub OAuth authentication in AWX
+  hosts: localhost
+  gather_facts: no
+  vars:
+    aap_url: "https://aap.example.com"
+    aap_user: "admin"
+    aap_pass: "changeme"
+    github_oauth_key: ""
+    github_oauth_secret: ""
+    github_org_name: ""
+  tasks:
+    - name: Configure GitHub OAuth settings
+      vars:
+        github_settings:
+          SOCIAL_AUTH_GITHUB_ENABLED: true
+          SOCIAL_AUTH_GITHUB_KEY: "{{ github_oauth_key }}"
+          SOCIAL_AUTH_GITHUB_SECRET: "{{ github_oauth_secret }}"
+      awx.awx.setting:
+        name: "{{ item.key }}"
+        value: "{{ item.value }}"
+        controller_host: "{{ aap_url }}"
+        controller_username: "{{ aap_user }}"
+        controller_password: "{{ aap_pass }}"
+        validate_certs: yes
+      loop: "{{ github_settings | dict2items }}"
+      register: github_result
+
+    - name: Configure GitHub org restriction
+      awx.awx.setting:
+        name: "{{ item.key }}"
+        value: "{{ item.value }}"
+        controller_host: "{{ aap_url }}"
+        controller_username: "{{ aap_user }}"
+        controller_password: "{{ aap_pass }}"
+        validate_certs: yes
+      loop:
+        - key: SOCIAL_AUTH_GITHUB_ORG_NAME
+          value: "{{ github_org_name }}"
+      when: github_org_name | length > 0
+      register: github_org_result
+
+    - name: Show result
+      ansible.builtin.debug:
+        var: github_result
