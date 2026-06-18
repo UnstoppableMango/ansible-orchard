@@ -1,2 +1,5 @@
 [local]
 localhost ansible_connection=local
+
+[aap_nodes]
+# rhel9.example.com ansible_user=ec2-user

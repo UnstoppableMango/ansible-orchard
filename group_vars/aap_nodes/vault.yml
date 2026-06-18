@@ -1,0 +1,6 @@
+---
+# ansible-vault encrypt this file: ansible-vault encrypt group_vars/aap_nodes/vault.yml
+# RHN offline token: https://access.redhat.com/management/api/
+vault_rhn_offline_token: ""
+aap_admin_password: ""
+aap_pg_password: ""

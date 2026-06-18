@@ -1,0 +1,37 @@
+---
+- name: Install Ansible Automation Platform on RHEL9 (single-node)
+  hosts: aap_nodes
+  become: true
+  gather_facts: true
+
+  vars:
+    aap_setup_down_offline_token: "{{ vault_rhn_offline_token }}"
+
+  tasks:
+    - name: Build single-node installer inventory nodes
+      ansible.builtin.set_fact:
+        aap_setup_prep_inv_nodes:
+          automationcontroller:
+            "{{ inventory_hostname }}": {}
+          database:
+            "{{ inventory_hostname }}": {}
+
+    - name: Download AAP installer bundle
+      ansible.builtin.include_role:
+        name: infra.aap_utilities.aap_setup_download
+
+    - name: Prepare AAP installer inventory
+      ansible.builtin.include_role:
+        name: infra.aap_utilities.aap_setup_prepare
+
+    - name: Run AAP installer
+      block:
+        - name: Execute setup.sh
+          ansible.builtin.include_role:
+            name: infra.aap_utilities.aap_setup_install
+      rescue:
+        - name: Report outcome
+          ansible.builtin.debug:
+            msg: >-
+              Installer stopped. Without an AAP subscription this is expected —
+              apply license at https://console.redhat.com, then re-run this playbook.

@@ -1,0 +1,15 @@
+---
+aap_setup_containerized: false
+aap_setup_down_version: "2.5"
+aap_setup_rhel_version: 9
+aap_setup_down_type: setup-bundle
+
+aap_setup_prep_inv_vars:
+  all:
+    ansible_become: true
+    admin_password: "{{ aap_admin_password }}"
+    pg_host: ""
+    pg_port: "5432"
+    pg_database: awx
+    pg_username: awx
+    pg_password: "{{ aap_pg_password }}"
