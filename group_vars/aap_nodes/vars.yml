@@ -13,3 +13,9 @@ aap_setup_prep_inv_vars:
     pg_database: awx
     pg_username: awx
     pg_password: "{{ aap_pg_password }}"
+
+aap_setup_prep_inv_secrets:
+  all:
+    # registry.redhat.io credentials — only consumed by containerized install
+    registry_username: "{{ vault_registry_username }}"
+    registry_password: "{{ vault_registry_password }}"

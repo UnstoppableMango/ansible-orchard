@@ -4,3 +4,7 @@
 vault_rhn_offline_token: ""
 aap_admin_password: ""
 aap_pg_password: ""
+# registry.redhat.io service account — needed for containerized install
+# https://access.redhat.com/RegistryAuthentication
+vault_registry_username: ""
+vault_registry_password: ""
