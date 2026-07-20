@@ -5,6 +5,7 @@ bin/
 .ansible/
 *.log
 *.out
+.claude/*
 
 # ansible-builder artifacts
 _build/
