@@ -1,0 +1,26 @@
+---
+- name: Deploy pam_mount.conf.xml
+  ansible.builtin.template:
+    src: pam_mount.conf.xml.j2
+    dest: /etc/security/pam_mount.conf.xml
+    owner: root
+    group: root
+    mode: '0644'
+
+# authselect current --raw prints one token per line: profile name, then enabled
+# features. rc=2 means no profile is selected — surfaced as an error because
+# enable-feature would also fail, and this indicates a pre-existing misconfiguration.
+- name: Check current authselect features
+  ansible.builtin.command:
+    cmd: authselect current --raw
+  register: authselect_current
+  changed_when: false
+  failed_when: authselect_current.rc not in [0, 2]
+
+- name: Enable pam_mount feature via authselect
+  ansible.builtin.command:
+    cmd: authselect enable-feature with-pamount
+  when: >
+    authselect_current.rc != 0 or
+    'with-pamount' not in authselect_current.stdout
+  changed_when: true

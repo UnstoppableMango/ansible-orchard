@@ -1,0 +1,16 @@
+[Unit]
+Description=SMB N drive for {{ item }}
+After=network-online.target sssd.service
+Wants=network-online.target
+# Skip silently if the user has not yet created their credentials file
+ConditionPathExists=/home/{{ item }}/.smbcredentials
+
+[Mount]
+What=//{{ smb_server }}/{{ item }}
+Where=/home/{{ item }}/{{ smb_mount_suffix }}
+Type=cifs
+# uid/gid as username strings — mount.cifs resolves via NSS (SSSD domain users work)
+Options=credentials=/home/{{ item }}/.smbcredentials,uid={{ item }},gid={{ item }},dir_mode=0700,file_mode=0600
+
+[Install]
+WantedBy=remote-fs.target

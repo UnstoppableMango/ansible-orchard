@@ -1,0 +1,20 @@
+---
+# Authentication method for SMB mounts.
+# Options:
+#   pam_mount_krb5  - Mount at SSH login using user's Kerberos ticket (GSSAPI).
+#                     Requires the SMB server to accept Kerberos authentication.
+#                     Zero user configuration.
+#   smbcredentials  - System-level systemd mount unit per user, reading
+#                     ~/.smbcredentials. Admin supplies smb_users list;
+#                     each user creates their own credentials file.
+smb_auth_method: pam_mount_krb5
+
+# SMB server hostname
+smb_server: oak.example.com
+
+# Mount point suffix appended to the user's home directory (the "N drive")
+smb_mount_suffix: n
+
+# smbcredentials method only: list of usernames that receive a systemd mount unit.
+# Example: smb_users: [alice, bob]
+smb_users: []

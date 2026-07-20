@@ -1,0 +1,11 @@
+---
+- ansible.builtin.import_tasks: packages.yml
+
+- ansible.builtin.import_tasks: pam_mount.yml
+  when: smb_auth_method == 'pam_mount_krb5'
+
+- ansible.builtin.import_tasks: systemd_mounts.yml
+  when: smb_auth_method == 'smbcredentials'
+
+- ansible.builtin.import_tasks: skel.yml
+  when: smb_auth_method == 'smbcredentials'

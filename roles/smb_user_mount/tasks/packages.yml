@@ -1,0 +1,14 @@
+---
+- name: Ensure cifs-utils and pam_mount are installed
+  ansible.builtin.package:
+    name:
+      - cifs-utils
+      - pam_mount
+    state: present
+  when: smb_auth_method == 'pam_mount_krb5'
+
+- name: Ensure cifs-utils is installed
+  ansible.builtin.package:
+    name: cifs-utils
+    state: present
+  when: smb_auth_method == 'smbcredentials'

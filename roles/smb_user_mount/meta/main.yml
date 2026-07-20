@@ -1,0 +1,14 @@
+---
+galaxy_info:
+  role_name: smb_user_mount
+  description: >
+    Per-user SMB N drive on RHEL 9 via pam_mount (Kerberos/GSSAPI)
+    or systemd mount units (user-managed credentials file).
+  license: MIT
+  min_ansible_version: "2.14"
+  platforms:
+    - name: EL
+      versions:
+        - "9"
+
+dependencies: []

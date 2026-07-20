@@ -1,0 +1,35 @@
+---
+# Systemd unit name for /home/<user>/n is home-<user>-n.mount per systemd path escaping.
+
+- name: Create systemd mount unit for each user
+  ansible.builtin.template:
+    src: smb-usermount.mount.j2
+    dest: "/etc/systemd/system/home-{{ item }}-n.mount"
+    owner: root
+    group: root
+    mode: '0644'
+  loop: "{{ smb_users }}"
+  notify: Reload systemd
+
+- name: Create drop-in directory for each user mount unit
+  ansible.builtin.file:
+    path: "/etc/systemd/system/home-{{ item }}-n.mount.d"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  loop: "{{ smb_users }}"
+
+- name: Enable and start each user mount unit
+  ansible.builtin.systemd:
+    name: "home-{{ item }}-n.mount"
+    enabled: true
+    state: started
+    daemon_reload: true
+  loop: "{{ smb_users }}"
+  register: mount_result
+  # ConditionPathExists in the unit causes systemd to skip the mount when
+  # ~/.smbcredentials does not yet exist. Treat that as non-failure.
+  failed_when:
+    - mount_result is failed
+    - "'Condition check resulted in' not in (mount_result.msg | default(''))"

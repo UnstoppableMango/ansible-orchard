@@ -1,0 +1,13 @@
+---
+- name: Deploy .smbcredentials.example to /etc/skel
+  ansible.builtin.copy:
+    dest: /etc/skel/.smbcredentials.example
+    owner: root
+    group: root
+    mode: '0600'
+    content: |
+      # Copy to ~/.smbcredentials and fill in your AD credentials.
+      # Protect the file after editing: chmod 600 ~/.smbcredentials
+      username=YOUR_USERNAME
+      password=YOUR_PASSWORD
+      domain=EXAMPLE

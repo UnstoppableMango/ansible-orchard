@@ -1,0 +1,11 @@
+---
+- name: Configure per-user SMB N drive mounts on RHEL 9
+  hosts: rhel9_workstations
+  become: true
+  gather_facts: true
+
+  vars:
+    smb_auth_method: pam_mount_krb5
+
+  roles:
+    - role: smb_user_mount

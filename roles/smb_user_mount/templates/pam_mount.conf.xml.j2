@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  Managed by Ansible role smb_user_mount. Do not edit manually.
+-->
+<pam_mount>
+
+  <debug enable="0"/>
+
+  <!-- Automatically create the mount point directory at login and remove it at logout -->
+  <mkmountpoint enable="1" remove="true"/>
+
+  <!--
+    Mount //{{ smb_server }}/%(USER) at %(HOME)/{{ smb_mount_suffix }} using Kerberos (GSSAPI).
+    %(USER), %(HOME), %(USERUID), %(USERGID) are pam_mount runtime substitutions, not Jinja2.
+    cruid= identifies which UID's Kerberos credential cache the kernel should use.
+    Login succeeds silently if the mount fails (e.g. no Kerberos ticket available).
+  -->
+  <volume
+    fstype="cifs"
+    server="{{ smb_server }}"
+    path="%(USER)"
+    mountpoint="%(HOME)/{{ smb_mount_suffix }}"
+    options="sec=krb5,uid=%(USERUID),gid=%(USERGID),cruid=%(USERUID)"
+  />
+
+</pam_mount>
