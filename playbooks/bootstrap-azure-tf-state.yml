@@ -1,0 +1,50 @@
+---
+- name: Bootstrap Azure Terraform state storage
+  hosts: localhost
+  gather_facts: no
+
+  vars:
+    tf_state_location: "{{ tf_state_location | default('eastus') }}"
+    tf_state_resource_group: "{{ tf_state_resource_group | default('rg-terraform-state') }}"
+    tf_state_storage_account: "{{ tf_state_storage_account | default('stterraformstate') }}"
+    tf_state_container_name: "{{ tf_state_container_name | default('tfstate') }}"
+
+  tasks:
+    - name: Create resource group
+      azure.azcollection.azure_rm_resourcegroup:
+        secret: "{{ azure_client_secret }}"
+        name: "{{ tf_state_resource_group }}"
+        location: "{{ tf_state_location }}"
+        state: present
+
+    - name: Create storage account
+      azure.azcollection.azure_rm_storageaccount:
+        secret: "{{ azure_client_secret }}"
+        resource_group: "{{ tf_state_resource_group }}"
+        name: "{{ tf_state_storage_account }}"
+        account_type: Standard_LRS
+        kind: StorageV2
+        https_only: true
+        minimum_tls_version: TLS1_2
+        state: present
+
+    - name: Create blob container
+      azure.azcollection.azure_rm_storagecontainer:
+        secret: "{{ azure_client_secret }}"
+        resource_group: "{{ tf_state_resource_group }}"
+        storage_account_name: "{{ tf_state_storage_account }}"
+        name: "{{ tf_state_container_name }}"
+        public_access: none
+        state: present
+
+    - name: Print azurerm backend config
+      ansible.builtin.debug:
+        msg: |
+          terraform {
+            backend "azurerm" {
+              resource_group_name  = "{{ tf_state_resource_group }}"
+              storage_account_name = "{{ tf_state_storage_account }}"
+              container_name       = "{{ tf_state_container_name }}"
+              key                  = "terraform.tfstate"
+            }
+          }

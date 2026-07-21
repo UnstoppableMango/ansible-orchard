@@ -1,0 +1,7 @@
+---
+azure_client_secret: "{{ vault_azure_client_secret }}"
+
+tf_state_location: "eastus"
+tf_state_resource_group: "rg-terraform-state"
+tf_state_storage_account: "stterraformstate"
+tf_state_container_name: "tfstate"
